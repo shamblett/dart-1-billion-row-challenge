@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
+//import 'dart:convert';
+
+int rowNum = 0;
 
 FutureOr<void> processFile(String fileName) async {
   var result = <String, List<double>>{};
 
   var file = File(fileName);
-  var lines = await file.readAsLines(encoding: latin1);
+  var lines = await file.readAsLines();
+  print('processFile: Finished reading the file as lines(rows)');
 
+  print('Processing the rows....');
   for (var line in lines) {
+    rowNum++;
     var parts = line.split(';');
     var location = parts[0];
     var measurement = double.parse(parts[1]);
@@ -43,12 +48,19 @@ FutureOr<void> processFile(String fileName) async {
   print(buffer.toString());
 }
 
-void main() async {
+FutureOr<void> main() async {
   print('Welcome to the Dart 1 billion row challenge');
   print('Processing the measurements.txt file');
   final stopwatch = Stopwatch();
   stopwatch.start();
-  await processFile('data/measurements.txt');
+  try {
+    await processFile('data/measurements.txt');
+  } on Exception {
+    stopwatch.stop();
+    print(
+        'Exception raised after ${stopwatch.elapsedMilliseconds / 1000} seconds, processed $rowNum rows');
+  }
   stopwatch.stop();
-  print('Parsing took ${stopwatch.elapsedMilliseconds / 1000} seconds');
+  print(
+      'Parsing took ${stopwatch.elapsedMilliseconds / 1000} seconds, processed $rowNum rows');
 }
