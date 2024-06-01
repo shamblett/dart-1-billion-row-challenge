@@ -33,7 +33,7 @@ FutureOr<void> processFile(String fileName) async {
   for (var location in sortedKeys) {
     var measurements = result[location]!;
     buffer.write(
-      '${location}=${measurements[0].toStringAsFixed(1)}/'
+      '$location=${measurements[0].toStringAsFixed(1)}/'
       '${(measurements[2] / measurements[3]).toStringAsFixed(1)}/'
       '${measurements[1].toStringAsFixed(1)}, ',
     );
