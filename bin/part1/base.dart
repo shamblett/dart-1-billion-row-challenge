@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-void processFile(String fileName) async {
+FutureOr<void> processFile(String fileName) async {
   var result = <String, List<double>>{};
 
   var file = File(fileName);
@@ -42,12 +43,12 @@ void processFile(String fileName) async {
   print(buffer.toString());
 }
 
-void main() {
+void main() async {
   print('Welcome to the Dart 1 billion row challenge');
   print('Processing the measurements.txt file');
   final stopwatch = Stopwatch();
   stopwatch.start();
-  processFile('data/measurements.txt');
+  await processFile('data/measurements.txt');
   stopwatch.stop();
   print('Parsing took ${stopwatch.elapsedMilliseconds / 1000} seconds');
 }
