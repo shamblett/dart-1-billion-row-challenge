@@ -1,19 +1,16 @@
 import 'dart:async';
 import 'dart:io';
-//import 'dart:convert';
+import 'dart:convert';
 
 int rowNum = 0;
 
 FutureOr<void> processFile(String fileName) async {
   var result = <String, List<double>>{};
 
-  var file = File(fileName);
-  // This is going to fail, the file is far to big.
-  var lines = await file.readAsLines();
-  print('processFile: Finished reading the file as lines(rows)');
+  final file = File(fileName);
 
   print('Processing the rows....');
-  for (var line in lines) {
+  file.openRead().map(latin1.decode).transform(LineSplitter()).forEach((line) {
     rowNum++;
     var parts = line.split(';');
     var location = parts[0];
@@ -32,8 +29,9 @@ FutureOr<void> processFile(String fileName) async {
       measurements[2] += measurement;
       measurements[3] += 1;
     }
-  }
+  });
 
+  print('Creating the results...');
   var buffer = StringBuffer('{');
   var sortedKeys = result.keys.toList()..sort();
   for (var location in sortedKeys) {
