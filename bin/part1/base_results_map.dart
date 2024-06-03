@@ -1,6 +1,8 @@
 //
 // Preallocated results map.
 //
+// Note some station names have been edited to compensate for the
+// translation to Latin-1, e.g, accents removed.
 
 final result = <String, List<double>>{
   'Abha': [0.0, 0.0, 0.0, 0.0],
@@ -224,7 +226,7 @@ final result = <String, List<double>>{
   'Makassar': [0.0, 0.0, 0.0, 0.0],
   'Makurdi': [0.0, 0.0, 0.0, 0.0],
   'Malabo': [0.0, 0.0, 0.0, 0.0],
-  'MalÃ©' : [0.0, 0.0, 0.0, 0.0],
+  'MalÃ©': [0.0, 0.0, 0.0, 0.0],
   'Managua': [0.0, 0.0, 0.0, 0.0],
   'Manama': [0.0, 0.0, 0.0, 0.0],
   'Mandalay': [0.0, 0.0, 0.0, 0.0],
