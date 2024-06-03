@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'base_results_map.dart';
 
 int rowNum = 0;
 
 FutureOr<void> processFile(String fileName) async {
-  final result = <String, List<double>>{};
-
   final file = File(fileName);
 
   print('Processing the rows....');
