@@ -19,6 +19,7 @@ FutureOr<void> processFile(String fileName) async {
     final measurement = double.parse(parts[1]);
 
     rowNum++;
+    print(location);
     final measurements = result[location]!;
     if (measurement < measurements[0]) {
       measurements[0] = measurement;
