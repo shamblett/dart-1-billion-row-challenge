@@ -22,7 +22,14 @@ which on the test machine was approx 500 seconds.
 
 # Results
 
-All timings are averaged over 3 runs.
+All timings are averaged over 3 runs in seconds.
 
 ## Part 1
 
+
+
+| Name        | VM  | Compiled   |
+|-------------|-----|------------|
+| base_naive  | N/A | N/A        |
+| base_better | 348 | 346        |
+| base_best   | 317 | 319        |
