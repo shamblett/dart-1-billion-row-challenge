@@ -16,3 +16,13 @@ essentially built into Dart.
 
 The goal is to start by obeying the rules(part 1), and then see what happens if you use external libraries and 
 better-suited file handling/processing functionality, i.e. using FFI(part 2).
+
+The following results should be measured against the average timing(3 runs) for the python script calc_python_base_py
+which on the test machine was approx 500 seconds.
+
+# Results
+
+All timings are averaged over 3 runs.
+
+## Part 1
+
