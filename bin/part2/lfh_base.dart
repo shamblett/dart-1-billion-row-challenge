@@ -16,6 +16,7 @@ FutureOr<void> processFile(String fileName) async {
   }
 
   print('The file length is $fileLength');
+  print('');
 
   // Open the file
   final fileFd = stdlib.open(fileName);
@@ -37,12 +38,8 @@ FutureOr<void> processFile(String fileName) async {
   final bData = ByteData.view(pBufMapped.data);
 
   // Create a stream generator for the file data
-  int readIndex = 0;
   Stream<List<int>> readData() async* {
-    while (readIndex < fileLength) {
-      yield bData.buffer.asUint8List(readIndex, 1);
-      readIndex++;
-    }
+      yield bData.buffer.asUint8List(0, fileLength);
   }
 
   print('Processing the rows....');

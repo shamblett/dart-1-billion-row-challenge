@@ -31,3 +31,12 @@ All timings are averaged over 3 runs in seconds.
 |  base_naive   |  N/A  |     N/A      |
 |  base_better  |  348  |     346      |
 |   base_best   |  317  |     319      |
+
+
+## Part 2
+
+|    Name    | VM  | Compiled |
+|:----------:|:---:|:--------:|
+|  lfh_base  | 300 |   300    |
+| lfh_better |     |          |
+|  lfh_best  |     |          |
