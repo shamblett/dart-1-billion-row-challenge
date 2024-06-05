@@ -37,6 +37,6 @@ All timings are averaged over 3 runs in seconds.
 
 |    Name    | VM  | Compiled |
 |:----------:|:---:|:--------:|
-|  lfh_base  | 300 |   300    |
-| lfh_better |     |          |
+|  lfh_base  | 315 |   315    |
+| lfh_better | 302 |   305    |
 |  lfh_best  |     |          |
