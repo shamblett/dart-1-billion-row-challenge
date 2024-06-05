@@ -8,5 +8,8 @@ publish_to: 'none'
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
+dependencies:
+  stdlibc: '^0.1.2'
+
 dev_dependencies:
   lints: '^4.0.0'
