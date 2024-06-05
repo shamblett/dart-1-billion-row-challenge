@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:stdlibc/stdlibc.dart' as stdlib;
@@ -12,16 +11,16 @@ FutureOr<void> processFile(String fileName) async {
   // Get the file size
   int fileLength = stdlib.stat(fileName)!.st_size;
   if (fileLength <= 0) {
-    print(
-        'processFile:: failed to stat file $fileName');
+    print('processFile:: failed to stat file $fileName');
     return;
   }
+
+  print('The file length is $fileLength');
 
   // Open the file
   final fileFd = stdlib.open(fileName);
   if (fileFd < 0) {
-    print(
-        'processFile:: failed to open file $fileName');
+    print('processFile:: failed to open file $fileName');
     return;
   }
 
@@ -32,18 +31,22 @@ FutureOr<void> processFile(String fileName) async {
       prot: stdlib.PROT_READ,
       flags: stdlib.MAP_PRIVATE);
   if (pBufMapped!.data.lengthInBytes <= 0) {
-    print(
-        'processFile:: failed to Mmap file $fileName');
+    print('processFile:: failed to Mmap file $fileName');
   }
 
   final bData = ByteData.view(pBufMapped.data);
 
+  // Create a stream generator for the file data
+  int readIndex = 0;
+  Stream<List<int>> readData() async* {
+    while (readIndex < fileLength) {
+      yield bData.buffer.asUint8List(readIndex, 1);
+      readIndex++;
+    }
+  }
+
   print('Processing the rows....');
-  await file
-      .openRead()
-      .map(latin1.decode)
-      .transform(LineSplitter())
-      .forEach((line) {
+  await readData().map(latin1.decode).transform(LineSplitter()).forEach((line) {
     var parts = line.split(';');
     var location = parts[0];
     var measurement = double.parse(parts[1]);
