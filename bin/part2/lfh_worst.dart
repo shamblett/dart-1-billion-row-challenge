@@ -42,7 +42,7 @@ FutureOr<void> processFile(String fileName) async {
       while (ch != 10) {
         final ret = stdlib.read(fileFd, 1);
         if (ret.isNotEmpty) {
-          ch = ret[0];
+          ch = (ret[0].abs());
           line.add(ch);
         }
       }
@@ -61,9 +61,8 @@ FutureOr<void> processFile(String fileName) async {
           .forEach((line) {
         final parts = line.split(';');
         final location = parts[0];
-        final measurement = double.parse(parts[1]);
-
-        rowNum++;
+        var measurement = double.tryParse(parts[1]);
+        measurement ??= 0.0;
         if (!result.containsKey(location)) {
           result[location] = [measurement, measurement, measurement, 1];
         } else {
@@ -78,6 +77,7 @@ FutureOr<void> processFile(String fileName) async {
           measurements[3] += 1;
         }
       });
+      rowNum++;
     }
   } on Exception catch (e) {
     print(e);
