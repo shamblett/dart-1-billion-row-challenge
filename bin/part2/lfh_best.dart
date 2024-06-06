@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:stdlibc/stdlibc.dart' as stdlib;
 //import '../part1/base_results_map.dart';
 
@@ -39,41 +38,49 @@ FutureOr<void> processFile(String fileName) async {
   Stream<List<int>> readData() async* {
     final line = <int>[];
     var ch = 0;
-    while (ch != 10) {
-      final ret = stdlib.read(fileFd, 1);
-      if (ret.isNotEmpty) {
-        ch = ret[0];
-        line.add(ch);
+    try {
+      while (ch != 10) {
+        final ret = stdlib.read(fileFd, 1);
+        if (ret.isNotEmpty) {
+          ch = ret[0];
+          line.add(ch);
+        }
       }
+    } on Exception catch (e) {
+      print(e);
     }
     yield line;
   }
 
   print('Processing the rows....');
-  while (rowNum != 1000000000) {
-    await readData()
-        .map(latin1.decode)
-        .transform(LineSplitter())
-        .forEach((line) {
-      final parts = line.split(';');
-      final location = parts[0];
-      final measurement = double.parse(parts[1]);
+  try {
+    while (rowNum != 1000000000) {
+      await readData()
+          .map(latin1.decode)
+          .transform(LineSplitter())
+          .forEach((line) {
+        final parts = line.split(';');
+        final location = parts[0];
+        final measurement = double.parse(parts[1]);
 
-      rowNum++;
-      if (!result.containsKey(location)) {
-        result[location] = [measurement, measurement, measurement, 1];
-      } else {
-        final measurements = result[location]!;
-        if (measurement < measurements[0]) {
-          measurements[0] = measurement;
+        rowNum++;
+        if (!result.containsKey(location)) {
+          result[location] = [measurement, measurement, measurement, 1];
+        } else {
+          final measurements = result[location]!;
+          if (measurement < measurements[0]) {
+            measurements[0] = measurement;
+          }
+          if (measurement > measurements[1]) {
+            measurements[1] = measurement;
+          }
+          measurements[2] += measurement;
+          measurements[3] += 1;
         }
-        if (measurement > measurements[1]) {
-          measurements[1] = measurement;
-        }
-        measurements[2] += measurement;
-        measurements[3] += 1;
-      }
-    });
+      });
+    }
+  } on Exception catch (e) {
+    print(e);
   }
 
   print('Creating the results...');
