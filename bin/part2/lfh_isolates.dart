@@ -10,6 +10,7 @@ const lastChunk = 8;
 const maxChunks = 16;
 int rowNum = 0;
 int fileLength = 0;
+late ByteData bData;
 
 ByteData prepareFile(String fileName) {
   // Get the file size
@@ -41,7 +42,7 @@ ByteData prepareFile(String fileName) {
   return ByteData.view(pBufMapped.data);
 }
 
-FutureOr<Result> processFile(int chunk, ByteData bData) async {
+FutureOr<Result> processFile(int chunk) async {
   Result result = {};
 
   // Create a stream generator for the file data
@@ -53,9 +54,12 @@ FutureOr<Result> processFile(int chunk, ByteData bData) async {
     }
   }
 
-  print('Processing the rows....');
+  print('Processing the rows, chunk = $chunk');
   await readData().map(latin1.decode).transform(LineSplitter()).forEach((line) {
     var parts = line.split(';');
+    if ( parts.length == 1) {
+      return;
+    }
     var location = parts[0];
     var measurement = double.parse(parts[1]);
 
@@ -86,9 +90,9 @@ FutureOr<int> main() async {
   final stopwatch = Stopwatch();
   stopwatch.start();
   try {
-    final bData = prepareFile('data/measurements.txt');
+    bData = prepareFile('data/measurements.txt');
     for (int chunk = 0; chunk <= 15; chunk++) {
-      results[chunk] = Isolate.run(() => processFile(chunk, bData));
+      results.add(Isolate.run(() => processFile(chunk)));
     }
   } on Exception {
     stopwatch.stop();
