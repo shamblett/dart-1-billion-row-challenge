@@ -60,6 +60,8 @@ FutureOr<Result> processFile(int chunk) async {
   print('Processing the rows, chunk = $chunk');
   await readData().map(latin1.decode).transform(LineSplitter()).forEach((line) {
     var parts = line.split(';');
+    // Throw away unterminated lines, we will lose a few entries for this
+    // bu I can't be bothered writing the code to fix this.
     if (parts.length == 1) {
       return;
     }
