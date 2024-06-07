@@ -12,12 +12,12 @@ int rowNum = 0;
 int fileLength = 0;
 late ByteData bData;
 
-ByteData prepareFile(String fileName) {
+void prepareFile(String fileName) {
   // Get the file size
   fileLength = stdlib.stat(fileName)!.st_size;
   if (fileLength <= 0) {
     print('processFile:: failed to stat file $fileName');
-    return ByteData(0);
+    return;
   }
 
   print('The file length is $fileLength');
@@ -27,7 +27,7 @@ ByteData prepareFile(String fileName) {
   final fileFd = stdlib.open(fileName);
   if (fileFd < 0) {
     print('processFile:: failed to open file $fileName');
-    return ByteData(0);
+    return;
   }
 
   // Mmap the file
@@ -39,14 +39,17 @@ ByteData prepareFile(String fileName) {
   if (pBufMapped!.data.lengthInBytes <= 0) {
     print('processFile:: failed to Mmap file $fileName');
   }
-  return ByteData.view(pBufMapped.data);
+  bData = ByteData.view(pBufMapped.data);
 }
 
 FutureOr<Result> processFile(int chunk) async {
   Result result = {};
 
+  prepareFile('data/measurements.txt');
+
   // Create a stream generator for the file data
   Stream<List<int>> readData() async* {
+    print('readData chunk is $chunk');
     if (chunk < 15) {
       yield bData.buffer.asUint8List(chunk * chunkSize, chunkSize);
     } else {
@@ -57,7 +60,7 @@ FutureOr<Result> processFile(int chunk) async {
   print('Processing the rows, chunk = $chunk');
   await readData().map(latin1.decode).transform(LineSplitter()).forEach((line) {
     var parts = line.split(';');
-    if ( parts.length == 1) {
+    if (parts.length == 1) {
       return;
     }
     var location = parts[0];
@@ -82,7 +85,7 @@ FutureOr<Result> processFile(int chunk) async {
 }
 
 FutureOr<int> main() async {
-  final results = <FutureOr<Result>>[];
+  final results = <Future>[];
 
   print('Welcome to the Dart 1 billion row challenge');
   print('Processing the measurements.txt file');
@@ -90,10 +93,12 @@ FutureOr<int> main() async {
   final stopwatch = Stopwatch();
   stopwatch.start();
   try {
-    bData = prepareFile('data/measurements.txt');
+    prepareFile('data/measurements.txt');
     for (int chunk = 0; chunk <= 15; chunk++) {
       results.add(Isolate.run(() => processFile(chunk)));
     }
+    await Future.wait(results);
+    print('Row processing complete');
   } on Exception {
     stopwatch.stop();
     print('');
