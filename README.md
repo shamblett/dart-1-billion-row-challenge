@@ -26,11 +26,11 @@ All timings are averaged over 3 runs in seconds.
 
 ## Part 1
 
-|     Name      | Time(s)  |
-|:-------------:|:--------:|
-|  base_naive   |   N/A    |
-|  base_better  |   348    |
-|   base_best   |   317    | 
+|     Name      | Time(s) |
+|:-------------:|:-------:|
+|  base_naive   |   N/A   |
+|  base_better  |   315   |
+|   base_best   |   312   | 
 
 
 ## Part 2
