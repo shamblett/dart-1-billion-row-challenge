@@ -84,12 +84,14 @@ FutureOr<Result> processFile(int chunk) async {
   return result;
 }
 
-void generateCombinedResult(List<FutureOr<Result>> results) {
+void generateCombinedResult(List<FutureOr<Result>> results) async {
   Result combinedResult = {};
   List<Result> tResult = [];
   for (final result in results) {
     if (result is Future) {
-      (result as Future).then((result) => tResult.add(result));
+      await (result as Future).then((result) => tResult.add(result));
+    } else {
+      tResult.add(result);
     }
   }
   for (final result in tResult) {
@@ -104,13 +106,16 @@ void generateCombinedResult(List<FutureOr<Result>> results) {
       } else {
         final measurements = combinedResult[location]!;
         if (result[location]![0] < measurements[0]) {
+          // min
           measurements[0] = result[location]![0];
         }
         if (result[location]![1] > measurements[1]) {
+          // max
           measurements[1] = result[location]![1];
         }
-        measurements[2] += result[location]![3];
-        measurements[3] += 1;
+        measurements[2] += result[location]![2];
+        measurements[3] += result[location]![3];
+        ;
       }
     }
   }
