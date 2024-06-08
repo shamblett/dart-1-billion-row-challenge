@@ -84,8 +84,55 @@ FutureOr<Result> processFile(int chunk) async {
   return result;
 }
 
+void generateCombinedResult(List<FutureOr<Result>> results) {
+  Result combinedResult = {};
+  List<Result> tResult = [];
+  for (final result in results) {
+    if (result is Future) {
+      (result as Future).then((result) => tResult.add(result));
+    }
+  }
+  for (final result in tResult) {
+    for (final location in result.keys) {
+      if (!combinedResult.containsKey(location)) {
+        combinedResult[location] = [
+          result[location]![0],
+          result[location]![1],
+          result[location]![2],
+          1
+        ];
+      } else {
+        final measurements = combinedResult[location]!;
+        if (result[location]![0] < measurements[0]) {
+          measurements[0] = result[location]![0];
+        }
+        if (result[location]![1] > measurements[1]) {
+          measurements[1] = result[location]![1];
+        }
+        measurements[2] += result[location]![3];
+        measurements[3] += 1;
+      }
+    }
+  }
+
+  print('Creating the results...');
+  var buffer = StringBuffer('{');
+  var sortedKeys = combinedResult.keys.toList()..sort();
+  for (var location in sortedKeys) {
+    var measurements = combinedResult[location]!;
+    buffer.write(
+      '$location=${measurements[0].toStringAsFixed(1)}/'
+      '${(measurements[2] / measurements[3]).toStringAsFixed(1)}/'
+      '${measurements[1].toStringAsFixed(1)}, ',
+    );
+  }
+  buffer.write('\b\b}');
+
+  print(buffer.toString());
+}
+
 FutureOr<int> main() async {
-  final results = <Future>[];
+  List<FutureOr<Result>> results = [];
 
   print('Welcome to the Dart 1 billion row challenge');
   print('Processing the measurements.txt file');
@@ -95,10 +142,11 @@ FutureOr<int> main() async {
   try {
     print('Processing the rows');
     for (int chunk = 0; chunk <= 15; chunk++) {
-      results.add(Isolate.run(() => processFile(chunk)));
+      results.add(Isolate.run<Result>(() => processFile(chunk)));
     }
-    await Future.wait(results);
-    print('Row processing complete, $rowNum rows processed');
+    await Future.wait<Result>(results.map((result) async => await result));
+    print('Row processing complete');
+    generateCombinedResult(results);
   } on Exception catch (e) {
     stopwatch.stop();
     print('');
