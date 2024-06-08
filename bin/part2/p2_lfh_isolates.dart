@@ -20,9 +20,6 @@ void prepareFile(String fileName) {
     return;
   }
 
-  print('The file length is $fileLength');
-  print('');
-
   // Open the file
   final fileFd = stdlib.open(fileName);
   if (fileFd < 0) {
@@ -49,7 +46,6 @@ FutureOr<Result> processFile(int chunk) async {
 
   // Create a stream generator for the file data
   Stream<List<int>> readData() async* {
-    print('readData chunk is $chunk');
     if (chunk < 15) {
       yield bData.buffer.asUint8List(chunk * chunkSize, chunkSize);
     } else {
@@ -57,16 +53,18 @@ FutureOr<Result> processFile(int chunk) async {
     }
   }
 
-  print('Processing the rows, chunk = $chunk');
   await readData().map(latin1.decode).transform(LineSplitter()).forEach((line) {
-    var parts = line.split(';');
-    // Throw away unterminated lines, we will lose a few entries for this
+    final parts = line.split(';');
+    // Throw away unterminated or unfinished lines, we will lose a few entries for this
     // bu I can't be bothered writing the code to fix this.
     if (parts.length == 1) {
       return;
     }
-    var location = parts[0];
-    var measurement = double.parse(parts[1]);
+    final location = parts[0];
+    final measurement = double.tryParse(parts[1]);
+    if (measurement == null) {
+      return;
+    }
 
     rowNum++;
     if (!result.containsKey(location)) {
@@ -95,22 +93,22 @@ FutureOr<int> main() async {
   final stopwatch = Stopwatch();
   stopwatch.start();
   try {
-    prepareFile('data/measurements.txt');
+    print('Processing the rows');
     for (int chunk = 0; chunk <= 15; chunk++) {
       results.add(Isolate.run(() => processFile(chunk)));
     }
     await Future.wait(results);
     print('Row processing complete, $rowNum rows processed');
-  } on Exception {
+  } on Exception catch (e) {
     stopwatch.stop();
     print('');
     print(
-        'Exception raised after ${stopwatch.elapsedMilliseconds / 1000} seconds, processed $rowNum rows');
+        'Exception raised after ${stopwatch.elapsedMilliseconds / 1000} seconds');
+    print('Exception is - $e');
     return 255;
   }
   stopwatch.stop();
   print('');
-  print(
-      'Parsing took ${stopwatch.elapsedMilliseconds / 1000} seconds, processed $rowNum rows');
+  print('Parsing took ${stopwatch.elapsedMilliseconds / 1000} seconds');
   return 0;
 }
