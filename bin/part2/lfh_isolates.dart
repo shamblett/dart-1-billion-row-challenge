@@ -100,7 +100,7 @@ FutureOr<int> main() async {
       results.add(Isolate.run(() => processFile(chunk)));
     }
     await Future.wait(results);
-    print('Row processing complete');
+    print('Row processing complete, $rowNum rows processed');
   } on Exception {
     stopwatch.stop();
     print('');
