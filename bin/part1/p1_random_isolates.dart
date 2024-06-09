@@ -1,54 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
-import 'package:stdlibc/stdlibc.dart' as stdlib;
 
 typedef Result = Map<String, List<double>>;
 const chunkSize = 919729143; // 15 * = 13795937145
 const lastChunk = 8;
 const maxChunks = 16;
-int fileLength = 0;
-late ByteData bData;
 
-void prepareFile(String fileName) {
-  // Get the file size
-  fileLength = stdlib.stat(fileName)!.st_size;
-  if (fileLength <= 0) {
-    print('processFile:: failed to stat file $fileName');
-    return;
-  }
-
-  // Open the file
-  final fileFd = stdlib.open(fileName);
-  if (fileFd < 0) {
-    print('processFile:: failed to open file $fileName');
-    return;
-  }
-
-  // Mmap the file
-  final pBufMapped = stdlib.mmap(
-      length: fileLength,
-      fd: fileFd,
-      prot: stdlib.PROT_READ,
-      flags: stdlib.MAP_PRIVATE);
-  if (pBufMapped!.data.lengthInBytes <= 0) {
-    print('processFile:: failed to Mmap file $fileName');
-  }
-  bData = ByteData.view(pBufMapped.data);
+File prepareFile(String fileName) {
+  final file = File(fileName);
+  return file;
 }
 
 FutureOr<Result> processFile(int chunk) async {
   Result result = {};
 
-  prepareFile('data/measurements.txt');
+  final file = prepareFile('data/measurements.txt');
 
   // Create a stream generator for the file data
   Stream<List<int>> readData() async* {
+    final fileChunk = file.openSync()..setPositionSync(chunk * chunkSize);
     if (chunk < 15) {
-      yield bData.buffer.asUint8List(chunk * chunkSize, chunkSize);
+      final chunkData = fileChunk.readSync(chunkSize);
+      yield chunkData.toList();
     } else {
-      yield bData.buffer.asUint8List(chunk * chunkSize, 8);
+      final chunkData = fileChunk.readSync(8);
+      yield chunkData.toList();
     }
   }
 
