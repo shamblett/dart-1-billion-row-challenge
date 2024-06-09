@@ -87,13 +87,12 @@ FutureOr<Result> processFile(int chunk) async {
 void generateCombinedResult(List<FutureOr<Result>> results) async {
   Result combinedResult = {};
   List<Result> tResult = [];
+
+  // Unwrap the futures
   for (final result in results) {
-    if (result is Future) {
-      await (result as Future).then((result) => tResult.add(result));
-    } else {
-      tResult.add(result);
-    }
+    await (result as Future).then((result) => tResult.add(result));
   }
+
   for (final result in tResult) {
     for (final location in result.keys) {
       if (!combinedResult.containsKey(location)) {
@@ -101,7 +100,7 @@ void generateCombinedResult(List<FutureOr<Result>> results) async {
           result[location]![0],
           result[location]![1],
           result[location]![2],
-          1
+          result[location]![3],
         ];
       } else {
         final measurements = combinedResult[location]!;
@@ -113,24 +112,27 @@ void generateCombinedResult(List<FutureOr<Result>> results) async {
           // max
           measurements[1] = result[location]![1];
         }
-        measurements[2] += result[location]![2];
+        measurements[2] += result[location]![2]; // Mean
         measurements[3] += result[location]![3];
-        ;
       }
     }
   }
 
+  print('');
   print('Creating the results...');
-  var buffer = StringBuffer('{');
-  var sortedKeys = combinedResult.keys.toList()..sort();
+  final buffer = StringBuffer('{');
+  final sortedKeys = combinedResult.keys.toList()..sort();
+  double processed = 0;
   for (var location in sortedKeys) {
-    var measurements = combinedResult[location]!;
+    final measurements = combinedResult[location]!;
+    processed += measurements[3];
     buffer.write(
       '$location=${measurements[0].toStringAsFixed(1)}/'
       '${(measurements[2] / measurements[3]).toStringAsFixed(1)}/'
       '${measurements[1].toStringAsFixed(1)}, ',
     );
   }
+  buffer.write('Number of rows processed - $processed');
   buffer.write('\b\b}');
 
   print(buffer.toString());
