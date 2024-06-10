@@ -19,7 +19,7 @@ better-suited file handling/processing functionality, i.e. using large file hand
 
 The following results should be measured against the average timing(3 runs) for the python script calc_python_base_py
 which on the test machine was approx 472 seconds. Note that the test machine is a 20 × Core™ i9-10900T with 64Gb of Ram and 
-SSD storage. You will need more than 32G of RAM to run the tests marked * below.
+SSD storage running stock Fedora 40. You will need more than 32G of RAM to run the tests marked * below.
 
 # Results
 
