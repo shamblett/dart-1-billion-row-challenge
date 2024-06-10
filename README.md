@@ -15,28 +15,30 @@ essentially built into Dart.
 
 
 The goal is to start by obeying the rules(part 1), and then see what happens if you use external libraries and 
-better-suited file handling/processing functionality, i.e. using FFI(part 2).
+better-suited file handling/processing functionality, i.e. using large file handling and isolatesI(part 2).
 
 The following results should be measured against the average timing(3 runs) for the python script calc_python_base_py
-which on the test machine was approx 500 seconds.
+which on the test machine was approx 472 seconds. Note that the test machine is a 20 × Core™ i9-10900T with 64Gb of Ram and 
+SSD storage. You will need more than 32G of RAM to run the tests marked * below.
 
 # Results
 
 All timings are averaged over 3 runs in seconds.
 
+calc_python_base.py  472 seconds
+
 ## Part 1
 
-|     Name      | Time(s) |
-|:-------------:|:-------:|
-|  base_naive   |   N/A   |
-|  base_better  |   315   |
-|   base_best   |   312   | 
+| Name               | Time(s) |
+|:-------------------|:-------:|
+| p1_base_naive      |   N/A   |
+| p1_base            |   307   |
+| p1_random_isolates |   N/A   | 
 
 
 ## Part 2
 
-|    Name    | Time(s) |
-|:----------:|:-------:|
-|  lfh_base  |   315   |
-| lfh_better |   302   |
-|  lfh_best  |         |
+|       Name        | Time(s) |
+|:-----------------:|:-------:|
+|   * p2_lfh_base   |   291   |
+| * p2_lfh_isolates |   64    |
