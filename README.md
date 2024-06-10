@@ -21,6 +21,8 @@ The following results should be measured against the average timing(3 runs) for 
 which on the test machine was approx 472 seconds. Note that the test machine is a 20 × Core™ i9-10900T with 64Gb of Ram and 
 SSD storage running stock Fedora 40. You will need more than 32G of RAM to run the tests marked * below.
 
+The Medium article accompanying this project can be found [here](https://medium.com/@stevehamblett/dart-one-billion-row-challenge-4993b71e82c0?sk=5cdc7d455673494f8b7c4e0ac65b753d)
+
 # Results
 
 All timings are averaged over 3 runs in seconds.
@@ -42,3 +44,5 @@ calc_python_base.py  472 seconds
 |:-----------------:|:-------:|
 |   * p2_lfh_base   |   291   |
 | * p2_lfh_isolates |   64    |
+
+https://medium.com/@stevehamblett/dart-one-billion-row-challenge-4993b71e82c0?sk=5cdc7d455673494f8b7c4e0ac65b753d
